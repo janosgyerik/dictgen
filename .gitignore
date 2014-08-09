@@ -62,3 +62,4 @@ settings.py
 # misc
 tmp/
 work/
+data/
