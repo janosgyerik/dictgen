@@ -41,7 +41,8 @@ def parse_file(arg):
     term = None
     content = ''
     count = 1
-    os.remove(INDEX_PATH)
+    if os.path.isfile(INDEX_PATH):
+        os.remove(INDEX_PATH)
     with open(arg) as fh:
         for line0 in fh:
             line = line0.strip()
