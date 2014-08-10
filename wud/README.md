@@ -20,6 +20,10 @@ Parsing
     - delete "P." line before "OZONIC"
     - delete "X." line before "WYND"
 
+    An already cleaned file is here (10 MB download, 27 MB unzipped):
+
+    http://data.janosgyerik.com/pub/webdict/wud/clean.1.gz
+
 3. Run `gen.py` to generate the index and entry files.
 
 
