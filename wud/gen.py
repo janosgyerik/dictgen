@@ -19,7 +19,7 @@ def get_filename(term, count):
     return dirname, filename + '.txt'
 
 
-def write_file(dirname, filename, content):
+def write_entry_file(dirname, filename, content):
     basedir = os.path.join(DATA_DIR, dirname)
     if not os.path.isdir(basedir):
         os.makedirs(basedir)
@@ -49,7 +49,7 @@ def parse_file(arg):
                 if term:
                     for term in term.split('; '):
                         dirname, filename = get_filename(term, count)
-                        write_file(dirname, filename, content)
+                        write_entry_file(dirname, filename, content)
                         append_to_index(dirname, filename, term)
                 term = line
                 content = line0
