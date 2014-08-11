@@ -49,7 +49,7 @@ def parse_file(arg, debug=False):
     with open(arg) as fh:
         for line0 in fh:
             line = line0.strip()
-            if re_entry_start.match(line) and prev_line_blank and not line.count('  '):
+            if re_entry_start.match(line) and prev_line_blank and '  ' not in line:
                 if term:
                     for term in term.split('; '):
                         dirname, filename = get_filename(term, count)
