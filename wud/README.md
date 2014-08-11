@@ -13,6 +13,7 @@ Parsing
     - cut out text before "A" (the first entry)
         - but leave 2 blank lines before it
     - cut out text after "ZYTHUM" (the last entry)
+	- add back a blank line, folled by "THE END"
     - change to unix format
     - add a blank line before "GAPES; THE GAPES" and after "The gapes."
     - add a blank line before "HINDOOISM"
