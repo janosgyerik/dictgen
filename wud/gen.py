@@ -19,13 +19,13 @@ def write_entry_file(dirname, filename, content):
 
     path = os.path.join(basedir, filename)
     with open(path, 'w') as fh:
-        fh.write(content)
+        fh.write('\n'.join(content) + '\n')
 
 
 def parse_content(arg):
     prev_line_blank = True
     term = None
-    content = ''
+    content = []
     with open(arg) as fh:
         for line0 in fh:
             line = line0.strip()
@@ -34,9 +34,9 @@ def parse_content(arg):
                     for term in term.split('; '):
                         yield term.lower(), content
                 term = line
-                content = line0
+                content = [line]
             else:
-                content += line0
+                content.append(line)
             prev_line_blank = not line
 
 
