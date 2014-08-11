@@ -32,8 +32,8 @@ def parse_content(arg):
             if re_entry_start.match(line) and prev_line_blank and '  ' not in line:
                 if term:
                     for term in term.split('; '):
-                        yield term.lower(), content
-                term = line
+                        yield term, content
+                term = line.lower()
                 content = [line]
             else:
                 content.append(line)
