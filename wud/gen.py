@@ -12,60 +12,61 @@ re_entry_start = re.compile(r'[A-Z][A-Z0-9 ;\'-.,]*$')
 re_nonalpha = re.compile(r'[^a-z]')
 
 
-def get_filename(term, count):
-    slug = re_nonalpha.sub('_', term.lower())
-    dirname = slug.ljust(2, '0')[:2]
-    filename = slug + '-' + str(count)
-    return dirname, filename + '.txt'
-
-
-def write_entry_file(dirname, filename, content, debug=False):
+def write_entry_file(dirname, filename, content):
     basedir = os.path.join(DATA_DIR, dirname)
-    if not debug:
-        if not os.path.isdir(basedir):
-            os.makedirs(basedir)
+    if not os.path.isdir(basedir):
+        os.makedirs(basedir)
 
     path = os.path.join(basedir, filename)
-    print '* writing to file', path
-    if not debug:
-        with open(path, 'w') as fh:
-            fh.write(content)
+    with open(path, 'w') as fh:
+        fh.write(content)
 
 
-def append_to_index(dirname, filename, term, debug=False):
-    if not debug:
-        with open(INDEX_PATH, 'a') as fh:
-            fh.write('{}/{}:{}\n'.format(dirname, filename, term.lower()))
-
-
-def parse_file(arg, debug=False):
+def parse_content(arg):
     prev_line_blank = True
-    prev_prefix = '0'
     term = None
     content = ''
-    count = 1
-    if not debug and os.path.isfile(INDEX_PATH):
-        os.remove(INDEX_PATH)
     with open(arg) as fh:
         for line0 in fh:
             line = line0.strip()
             if re_entry_start.match(line) and prev_line_blank and '  ' not in line:
                 if term:
                     for term in term.split('; '):
-                        dirname, filename = get_filename(term, count)
-                        write_entry_file(dirname, filename, content, debug=debug)
-                        append_to_index(dirname, filename, term, debug=debug)
+                        yield term.lower(), content
                 term = line
                 content = line0
-                if term[0] != prev_prefix:
-                    prev_prefix = term[0]
-                    count = 1
-                count += 1
-                if debug and count > 25:
-                    break
             else:
                 content += line0
             prev_line_blank = not line
+
+
+def get_split_path(term, count):
+    slug = re_nonalpha.sub('_', term.lower()).ljust(3, '_')
+    dirname = os.path.join(slug[0], slug[:2], slug[:3])
+    filename = '{}-{}.txt'.format(slug, count)
+    return dirname, filename
+
+
+def parse_file(arg, debug=False):
+    def rebuild_index(fh=None):
+        count = 0
+        for term, content in parse_content(arg):
+            count += 1
+            if debug and count > 25:
+                break
+            dirname, filename = get_split_path(term, count)
+            entry = '{}/{}:{}'.format(dirname, filename, term)
+            print(entry)
+            if not debug:
+                fh.write(entry + '\n')
+                write_entry_file(dirname, filename, content)
+    if debug:
+        rebuild_index()
+    else:
+        if not os.path.isdir(DATA_DIR):
+            os.makedirs(DATA_DIR)
+        with open(INDEX_PATH, 'w') as fh:
+            rebuild_index(fh)
 
 
 def main():
