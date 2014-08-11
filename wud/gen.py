@@ -25,6 +25,7 @@ def write_entry_file(dirname, filename, content):
 def parse_content(arg):
     prev_line_blank = True
     term = None
+    term_count = 0
     content = []
     with open(arg) as fh:
         for line0 in fh:
@@ -33,8 +34,15 @@ def parse_content(arg):
                 if term:
                     for term in term.split('; '):
                         yield term, content
+                prev_term = term
                 term = line.lower()
-                content = [line]
+                if term == prev_term:
+                    term_count += 1
+                    subscript = '-' + str(term_count)
+                else:
+                    term_count = 1
+                    subscript = ''
+                content = [term + subscript]
             else:
                 content.append(line)
             prev_line_blank = not line
