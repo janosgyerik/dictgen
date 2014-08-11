@@ -48,7 +48,7 @@ def get_split_path(term, count):
 
 
 def parse_file(arg, debug=False):
-    def rebuild_index(fh=None):
+    def rebuild_index():
         count = 0
         for term, content in parse_content(arg):
             count += 1
@@ -66,7 +66,7 @@ def parse_file(arg, debug=False):
         if not os.path.isdir(DATA_DIR):
             os.makedirs(DATA_DIR)
         with open(INDEX_PATH, 'w') as fh:
-            rebuild_index(fh)
+            rebuild_index()
 
 
 def main():
