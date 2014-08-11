@@ -61,7 +61,7 @@ def parse_file(arg, debug=False):
                     prev_prefix = term[0]
                     count = 1
                 count += 1
-                if debug and count > 5:
+                if debug and count > 25:
                     break
             else:
                 content += line0
