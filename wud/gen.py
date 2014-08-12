@@ -55,12 +55,12 @@ def get_split_path(term, count):
     return dirname, filename
 
 
-def parse_file(arg, dry_run=False):
+def parse_file(arg, dry_run=False, max_count=0):
     def rebuild_index():
         count = 0
         for term, content in parse_content(arg):
             count += 1
-            if dry_run and count > 25:
+            if max_count and count > max_count:
                 break
             dirname, filename = get_split_path(term, count)
             entry = '{}/{}:{}'.format(dirname, filename, term)
@@ -79,12 +79,15 @@ def parse_file(arg, dry_run=False):
 
 def main():
     parser = ArgumentParser(description='Generate index and entry files from cleaned plain text file')
-    parser.add_argument('--dry-run', '-d', '-n', help="Dry run, don't write to files", action='store_true')
+    parser.add_argument('--dry-run', '-d', '-n', action='store_true',
+                        help="Dry run, don't write to files")
+    parser.add_argument('--max-count', '-c', type=int,
+                        help="Exit after processing N records")
     parser.add_argument('files', help="File(s) to parse", nargs='+')
     args = parser.parse_args()
 
     for arg in args.files:
-        parse_file(arg, dry_run=args.dry_run)
+        parse_file(arg, dry_run=args.dry_run, max_count=args.max_count)
 
 if __name__ == '__main__':
     main()
