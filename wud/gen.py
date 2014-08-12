@@ -55,20 +55,20 @@ def get_split_path(term, count):
     return dirname, filename
 
 
-def parse_file(arg, debug=False):
+def parse_file(arg, dry_run=False):
     def rebuild_index():
         count = 0
         for term, content in parse_content(arg):
             count += 1
-            if debug and count > 25:
+            if dry_run and count > 25:
                 break
             dirname, filename = get_split_path(term, count)
             entry = '{}/{}:{}'.format(dirname, filename, term)
             print(entry)
-            if not debug:
+            if not dry_run:
                 fh.write(entry + '\n')
                 write_entry_file(dirname, filename, content)
-    if debug:
+    if dry_run:
         rebuild_index()
     else:
         if not os.path.isdir(DATA_DIR):
@@ -79,12 +79,12 @@ def parse_file(arg, debug=False):
 
 def main():
     parser = ArgumentParser(description='Generate index and entry files from cleaned plain text file')
-    parser.add_argument('--debug', '-d', help="Debug mode, don't write to files", action='store_true')
+    parser.add_argument('--dry-run', '-d', '-n', help="Dry run, don't write to files", action='store_true')
     parser.add_argument('files', help="File(s) to parse", nargs='+')
     args = parser.parse_args()
 
     for arg in args.files:
-        parse_file(arg, debug=args.debug)
+        parse_file(arg, dry_run=args.dry_run)
 
 if __name__ == '__main__':
     main()
