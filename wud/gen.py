@@ -2,6 +2,7 @@
 
 import re
 import os
+import logging
 
 from argparse import ArgumentParser
 
@@ -10,6 +11,8 @@ INDEX_PATH = os.path.join(DATA_DIR, 'index.dat')
 
 re_entry_start = re.compile(r'[A-Z][A-Z0-9 ;\'-.,]*$')
 re_nonalpha = re.compile(r'[^a-z]')
+
+logger = logging.getLogger(__name__)
 
 
 def write_entry_file(dirname, filename, content):
@@ -64,7 +67,7 @@ def parse_file(arg, dry_run=False, max_count=0):
                 break
             dirname, filename = get_split_path(term, count)
             entry = '{}/{}:{}'.format(dirname, filename, term)
-            print(entry)
+            logger.info(entry)
             if not dry_run:
                 fh.write(entry + '\n')
                 write_entry_file(dirname, filename, content)
@@ -85,6 +88,9 @@ def main():
                         help="Exit after processing N records")
     parser.add_argument('files', help="File(s) to parse", nargs='+')
     args = parser.parse_args()
+
+    logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.INFO)
 
     for arg in args.files:
         parse_file(arg, dry_run=args.dry_run, max_count=args.max_count)
