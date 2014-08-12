@@ -3,7 +3,7 @@
 import re
 import os
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 DATA_DIR = 'data'
 INDEX_PATH = os.path.join(DATA_DIR, 'index.dat')
@@ -78,17 +78,13 @@ def parse_file(arg, debug=False):
 
 
 def main():
-    parser = OptionParser()
-    parser.set_usage('%prog [options] file...')
-    parser.add_option('--debug', '-d', help="Debug mode, don't write to files", action='store_true')
-    parser.set_description('Generate index and entry files from cleaned plain text file')
-    (options, args) = parser.parse_args()
+    parser = ArgumentParser(description='Generate index and entry files from cleaned plain text file')
+    parser.add_argument('--debug', '-d', help="Debug mode, don't write to files", action='store_true')
+    parser.add_argument('files', help="File(s) to parse", nargs='+')
+    args = parser.parse_args()
 
-    if args:
-        for arg in args:
-            parse_file(arg, debug=options.debug)
-    else:
-        parser.print_help()
+    for arg in args.files:
+        parse_file(arg, debug=args.debug)
 
 if __name__ == '__main__':
     main()
