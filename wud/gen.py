@@ -25,6 +25,10 @@ def write_entry_file(dirname, filename, content):
         fh.write('\n'.join(content) + '\n')
 
 
+def is_new_term(line, prev_line_blank):
+    return re_entry_start.match(line) and prev_line_blank and '  ' not in line
+
+
 def parse_content(arg):
     prev_line_blank = True
     term = None
@@ -33,7 +37,7 @@ def parse_content(arg):
     with open(arg) as fh:
         for line0 in fh:
             line = line0.strip()
-            if re_entry_start.match(line) and prev_line_blank and '  ' not in line:
+            if is_new_term(line, prev_line_blank):
                 if term:
                     for term in term.split('; '):
                         yield term, content
@@ -71,6 +75,7 @@ def parse_file(arg, dry_run=False, max_count=0):
             if not dry_run:
                 fh.write(entry + '\n')
                 write_entry_file(dirname, filename, content)
+
     if dry_run:
         rebuild_index()
     else:
@@ -81,7 +86,8 @@ def parse_file(arg, dry_run=False, max_count=0):
 
 
 def main():
-    parser = ArgumentParser(description='Generate index and entry files from cleaned plain text file')
+    parser = ArgumentParser(description='Generate index and entry files '
+                                        'from cleaned plain text file')
     parser.add_argument('--dry-run', '-d', '-n', action='store_true',
                         help="Dry run, don't write to files")
     parser.add_argument('--max-count', '-c', type=int,
@@ -94,6 +100,7 @@ def main():
 
     for arg in args.files:
         parse_file(arg, dry_run=args.dry_run, max_count=args.max_count)
+
 
 if __name__ == '__main__':
     main()
