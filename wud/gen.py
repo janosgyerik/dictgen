@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import re
-import os
 import logging
+import os
+import re
 
 from argparse import ArgumentParser
 
