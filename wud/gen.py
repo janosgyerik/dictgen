@@ -20,7 +20,7 @@ def write_entry_file(dirname, filename, content):
 
     path = os.path.join(basedir, filename)
     with open(path, 'w') as fh:
-        fh.write('\n'.join(content) + '\n')
+        fh.write(content)
 
 
 def is_new_term(line, prev_line_blank):
@@ -38,7 +38,7 @@ def parse_content(arg):
             if is_new_term(line, prev_line_blank):
                 if term:
                     for term in term.split('; '):
-                        yield term, content
+                        yield term, '\n'.join(content) + '\n'
                 prev_term = term
                 term = line.lower()
                 if term == prev_term:
