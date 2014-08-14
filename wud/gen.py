@@ -61,7 +61,7 @@ def get_split_path(term, count):
 
 
 def parse_file(arg, dry_run=False, max_count=0):
-    def rebuild_index():
+    def next_index_entry():
         count = 0
         for term, content in parse_content(arg):
             count += 1
@@ -70,17 +70,18 @@ def parse_file(arg, dry_run=False, max_count=0):
             dirname, filename = get_split_path(term, count)
             entry = '{}/{}:{}'.format(dirname, filename, term)
             logging.info(entry)
-            if not dry_run:
-                fh.write(entry + '\n')
-                write_entry_file(dirname, filename, content)
+            yield entry, dirname, filename, content
 
     if dry_run:
-        rebuild_index()
+        for _ in next_index_entry():
+            pass
     else:
         if not os.path.isdir(DATA_DIR):
             os.makedirs(DATA_DIR)
         with open(INDEX_PATH, 'w') as fh:
-            rebuild_index()
+            for entry, dirname, filename, content in next_index_entry():
+                fh.write(entry + '\n')
+                write_entry_file(dirname, filename, content)
 
 
 def main():
