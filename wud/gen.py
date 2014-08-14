@@ -60,26 +60,27 @@ def get_split_path(term, count):
     return dirname, filename
 
 
-def parse_file(arg, dry_run=False, max_count=0):
-    def next_index_entry():
-        count = 0
-        for term, content in parse_content(arg):
-            count += 1
-            if max_count and count > max_count:
-                break
-            dirname, filename = get_split_path(term, count)
-            entry = '{}/{}:{}'.format(dirname, filename, term)
-            logging.info(entry)
-            yield entry, dirname, filename, content
+def next_index_entry(arg, max_count):
+    count = 0
+    for term, content in parse_content(arg):
+        count += 1
+        if max_count and count > max_count:
+            break
+        dirname, filename = get_split_path(term, count)
+        entry = '{}/{}:{}'.format(dirname, filename, term)
+        logging.info(entry)
+        yield entry, dirname, filename, content
 
+
+def parse_file(arg, dry_run=False, max_count=0):
     if dry_run:
-        for _ in next_index_entry():
+        for _ in next_index_entry(arg, max_count):
             pass
     else:
         if not os.path.isdir(DATA_DIR):
             os.makedirs(DATA_DIR)
         with open(INDEX_PATH, 'w') as fh:
-            for entry, dirname, filename, content in next_index_entry():
+            for entry, dirname, filename, content in next_index_entry(arg, max_count):
                 fh.write(entry + '\n')
                 write_entry_file(dirname, filename, content)
 
