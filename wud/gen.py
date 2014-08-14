@@ -27,12 +27,12 @@ def is_new_term(line, prev_line_blank):
     return re_entry_start.match(line) and prev_line_blank and '  ' not in line
 
 
-def parse_content(arg):
+def next_term_content(raw_content_path):
     prev_line_blank = True
     term = None
     term_count = 0
     content = []
-    with open(arg) as fh:
+    with open(raw_content_path) as fh:
         for line0 in fh:
             line = line0.strip()
             if is_new_term(line, prev_line_blank):
@@ -60,9 +60,9 @@ def get_split_path(term, count):
     return dirname, filename
 
 
-def next_index_entry(arg, max_count):
+def next_index_entry(raw_content_path, max_count):
     count = 0
-    for term, content in parse_content(arg):
+    for term, content in next_term_content(raw_content_path):
         count += 1
         if max_count and count > max_count:
             break
@@ -72,15 +72,15 @@ def next_index_entry(arg, max_count):
         yield entry, dirname, filename, content
 
 
-def parse_file(arg, dry_run=False, max_count=0):
+def parse_file(raw_content_path, dry_run=False, max_count=0):
     if dry_run:
-        for _ in next_index_entry(arg, max_count):
+        for _ in next_index_entry(raw_content_path, max_count):
             pass
     else:
         if not os.path.isdir(DATA_DIR):
             os.makedirs(DATA_DIR)
         with open(INDEX_PATH, 'w') as fh:
-            for entry, dirname, filename, content in next_index_entry(arg, max_count):
+            for entry, dirname, filename, content in next_index_entry(raw_content_path, max_count):
                 fh.write(entry + '\n')
                 write_entry_file(dirname, filename, content)
 
